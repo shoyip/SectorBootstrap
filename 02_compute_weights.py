@@ -23,7 +23,7 @@ def _get_sequence_weights(s: torch.Tensor, data: torch.Tensor, L: int, th: float
 def compute_weights(
         data: Union[np.ndarray, torch.Tensor],
         th: float = 0.8,
-        device: torch.device = torch.device("cpu"),
+        device: torch.device = torch.device("cuda"),
         dtype: torch.dtype = torch.float32
     ):
     if len(data.shape) not in (2, 3):
