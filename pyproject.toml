@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "biopython>=1.86",
     "matplotlib>=3.10.8",
+    "sbm",
     "torch==2.4.1",
 ]
 
@@ -22,6 +23,7 @@ torch = [
   { index = "pytorch-cpu", extra = "cpu" },
   { index = "pytorch-cu124", extra = "cu124" },
 ]
+sbm = { git = "https://github.com/StatBio/Stochastic-Boltzmann-Machine" }
 
 [[tool.uv.index]]
 # The pytorch-cpu index is used to install the torch, torchvision, and torchaudio packages
