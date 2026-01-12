@@ -63,7 +63,8 @@ def compute_weights(
 if __name__ == "__main__":
     aln = np.load("./data/full_aln.npz")
     start = time.perf_counter()
-    w = compute_weights(aln['seq'][:10_000])
+    w = compute_weights(aln['seq'][:5_000])
     end = time.perf_counter()
     print(end - start)
     print(np.sum(w))
+    np.save('data/first_5000_weights.npy', w)
