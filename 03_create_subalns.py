@@ -17,10 +17,10 @@ K = int(input("Enter desired number of subsets (K): "))
 np.random.seed(42)
 
 # choose K sets of size N_eff
-subsets_indices = np.random.randint(0, M, size=[K, M_eff])
+subset_indices = np.random.randint(0, M, size=[K, M_eff])
 
 # mask the description and sequence arrays to produce new sub-alignments
-aln_seq_subsets = np.take(aln['seq'], subsets_indices, axis=0)
+aln_seq_subsets = np.take(aln['seq'], subset_indices, axis=0)
 aln_desc_subsets = np.take(aln['desc'], subset_indices, axis=0)
 
 # save the subsets of the alignment in a .npz file
