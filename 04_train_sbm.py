@@ -5,9 +5,9 @@ import argparse
 from pathlib import Path
 import SBM
 
-ROOT = Path(SBM.__file__).resolve().parents[2]
+ROOT = Path(SBM.__file__).resolve().parents[3]
 data_dir = ROOT / "data"
-results_dir = ROOT / "results"
+results_dir = ROOT / "data" / "results"
 
 def run_SBM(Input_MSA,fam,Model,train_file,N_iter, m, N_chains_list,Nb_rep,Nb_av,k_MCMC,TestTrain,ParamInit,lambdJ,lambdh,theta,weights_file):
     fam = str(fam)
@@ -30,7 +30,7 @@ def run_SBM(Input_MSA,fam,Model,train_file,N_iter, m, N_chains_list,Nb_rep,Nb_av
 
                 if weights_file is not None:
                     print(f"Loading pre-computed weights from: {weights_file}")
-                    weights = np.loadtxt(weights_file).ravel()
+                    weights = np.load(weights_file).ravel()
                     assert len(weights) == align.shape[0], \
                         f"Weight length ({len(weights)}) != MSA size ({align.shape[0]})"
                 else:
@@ -114,8 +114,8 @@ def main():
     print("About to run SBM...")
 
     # run SBM
-    run_SBM(Input_MSA='./data/MSA_array/aln_redsector.npy',
-            fam='SerProtRedSec',
+    run_SBM(Input_MSA='./data/full_aln.npz',
+            fam='SerProt',
             N_iter=400,
             N_chains_list=[500],
             m=1,
@@ -127,7 +127,7 @@ def main():
             TestTrain=0,
             Nb_rep=1,
             Nb_av=1,
-            weights_file='./aln_redsector_weights.txt',
+            weights_file='./data/full_aln_weights.npy',
             Model='SBM',
             train_file=None)
 

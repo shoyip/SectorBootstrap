@@ -55,6 +55,15 @@ wheels = [
 ]
 
 [[package]]
+name = "colorama"
+version = "0.4.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44", size = 27697, upload-time = "2022-10-25T02:36:22.414Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6", size = 25335, upload-time = "2022-10-25T02:36:20.889Z" },
+]
+
+[[package]]
 name = "contourpy"
 version = "1.3.3"
 source = { registry = "https://pypi.org/simple" }
@@ -726,6 +735,7 @@ dependencies = [
     { name = "torch", version = "2.4.1", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-15-sectorbootstrap-cpu' and extra == 'extra-15-sectorbootstrap-cu124') or (extra != 'extra-15-sectorbootstrap-cpu' and extra != 'extra-15-sectorbootstrap-cu124')" },
     { name = "torch", version = "2.4.1+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(python_full_version >= '3.13' and sys_platform == 'linux' and extra == 'extra-15-sectorbootstrap-cpu') or (python_full_version < '3.13' and sys_platform == 'linux' and extra == 'extra-15-sectorbootstrap-cpu' and extra == 'extra-15-sectorbootstrap-cu124') or (platform_machine != 'aarch64' and sys_platform == 'linux' and extra == 'extra-15-sectorbootstrap-cpu') or (platform_python_implementation != 'CPython' and sys_platform == 'linux' and extra == 'extra-15-sectorbootstrap-cpu') or (sys_platform != 'darwin' and sys_platform != 'linux' and extra == 'extra-15-sectorbootstrap-cpu') or (sys_platform == 'darwin' and extra == 'extra-15-sectorbootstrap-cpu' and extra == 'extra-15-sectorbootstrap-cu124')" },
     { name = "torch", version = "2.4.1+cu124", source = { registry = "https://download.pytorch.org/whl/cu124" }, marker = "(python_full_version >= '3.13' and extra == 'extra-15-sectorbootstrap-cu124') or (python_full_version < '3.13' and extra == 'extra-15-sectorbootstrap-cpu' and extra == 'extra-15-sectorbootstrap-cu124') or (platform_machine != 'aarch64' and extra == 'extra-15-sectorbootstrap-cu124') or (platform_python_implementation != 'CPython' and extra == 'extra-15-sectorbootstrap-cu124') or (sys_platform != 'linux' and extra == 'extra-15-sectorbootstrap-cu124')" },
+    { name = "tqdm" },
 ]
 
 [package.optional-dependencies]
@@ -746,6 +756,7 @@ requires-dist = [
     { name = "torch", specifier = "==2.4.1" },
     { name = "torch", marker = "extra == 'cpu'", specifier = "==2.4.1", index = "https://download.pytorch.org/whl/cpu", conflict = { package = "sectorbootstrap", extra = "cpu" } },
     { name = "torch", marker = "extra == 'cu124'", specifier = "==2.4.1", index = "https://download.pytorch.org/whl/cu124", conflict = { package = "sectorbootstrap", extra = "cu124" } },
+    { name = "tqdm", specifier = ">=4.67.1" },
 ]
 provides-extras = ["cpu", "cu124"]
 
@@ -893,6 +904,18 @@ dependencies = [
 wheels = [
     { url = "https://download.pytorch.org/whl/cu124/torch-2.4.1%2Bcu124-cp312-cp312-linux_x86_64.whl", hash = "sha256:975a1d0540ebe05f6f88f692bb9d848f7fac035343a91aef08f2b8d0040dde8c" },
     { url = "https://download.pytorch.org/whl/cu124/torch-2.4.1%2Bcu124-cp312-cp312-win_amd64.whl", hash = "sha256:d077728576768acbf0e4ce1b87164d1f3f75c17a9b1676c09e84c32ceeac1c06" },
+]
+
+[[package]]
+name = "tqdm"
+version = "4.67.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-15-sectorbootstrap-cpu' and extra == 'extra-15-sectorbootstrap-cu124')" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737, upload-time = "2024-11-24T20:12:22.481Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2", size = 78540, upload-time = "2024-11-24T20:12:19.698Z" },
 ]
 
 [[package]]
