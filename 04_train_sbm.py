@@ -20,21 +20,23 @@ def run_SBM(Input_MSA,fam,Model,train_file,N_iter, m, N_chains_list,Nb_rep,Nb_av
             Extime_rep = np.zeros(Nb_av)
             for n_av in range(Nb_av):
                 print('AVG: ',n_av)
-                align = np.load(str(Input_MSA))
+                align = np.load(str(Input_MSA))[:1000, :]
+                print(align.shape)
                 if train_file is not None:
                     ind_train = np.load(train_file)
                     print('Database size: ', align.shape, ' & Training set size: ', len(ind_train))
                 else:
                     ind_train = None
                     print('Database size: ', align.shape)
-
-                if weights_file is not None:
-                    print(f"Loading pre-computed weights from: {weights_file}")
-                    weights = np.load(weights_file).ravel()
-                    assert len(weights) == align.shape[0], \
-                        f"Weight length ({len(weights)}) != MSA size ({align.shape[0]})"
-                else:
-                    weights = None  # Will be computed during SBM
+#
+#                if weights_file is not None:
+#                    print(f"Loading pre-computed weights from: {weights_file}")
+#                    weights = np.load(weights_file).ravel()[:1000]
+#                    print(weights.shape)
+#                    assert len(weights) == align.shape[0], \
+#                        f"Weight length ({len(weights)}) != MSA size ({align.shape[0]})"
+#                else:
+                weights = None  # Will be computed during SBM
 
                 options = dict([('Model', Model),
                                 ('N_iter', N_iter), ('N_chains', N_chains), ('m', m),
@@ -109,12 +111,12 @@ def run_SBM(Input_MSA,fam,Model,train_file,N_iter, m, N_chains_list,Nb_rep,Nb_av
 
 def main():
     # transform alignment in numpy array
-    msa = ut.load_fasta("aln_redsector.faa")
-    np.save("data/MSA_array/aln_redsector.npy", msa)
+    msa = ut.load_fasta("./data/iter_aln_dedup_sp.faa")
+    np.save("./data/full_aln.npy", msa)
     print("About to run SBM...")
 
     # run SBM
-    run_SBM(Input_MSA='./data/full_aln.npz',
+    run_SBM(Input_MSA='./data/full_aln.npy',
             fam='SerProt',
             N_iter=400,
             N_chains_list=[500],
@@ -127,7 +129,7 @@ def main():
             TestTrain=0,
             Nb_rep=1,
             Nb_av=1,
-            weights_file='./data/full_aln_weights.npy',
+            weights_file='./data/full_weights.npy',
             Model='SBM',
             train_file=None)
 
