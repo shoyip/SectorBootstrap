@@ -37,7 +37,7 @@ else:
 # enter the sector residues
 sector = input("Enter sector residues separated by commas [red_sector]: ")
 if sector == "":
-    sector = [197, 239, 237, 224, 186, 225, 189, 190, 200, 227, 228, 222, 238, 2, 229, 164, 195, 194, 231, 165, 176, 1]
+    sector = [1, 2, 164, 165, 176, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 238, 239]
 else:
     sector = sector.split(",")
 
