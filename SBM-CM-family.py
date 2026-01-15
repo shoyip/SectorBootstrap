@@ -14,7 +14,7 @@ import SBM
 
 ROOT = Path(SBM.__file__).resolve().parents[2] 
 data_dir = ROOT / "data"
-results_dir = ROOT / "results"
+results_dir = ROOT / ".." / "results"
 
 ##########################################################
 
