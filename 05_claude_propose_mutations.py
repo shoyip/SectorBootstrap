@@ -83,57 +83,57 @@ if __name__ == "__main__":
     rat_trypsin = np.array([c for c in rat_trypsin])[red_sector]
     nums = np.array([c for c in nums])[red_sector]
 
-    print(rat_trypsin, nums)
+    print(''.join(rat_trypsin), nums)
     
-    for subaln_idx, subaln_file in enumerate(glob("./results/*/*.npy")):
-        print(f"\n{'='*60}")
-        print(f"Subalignment {subaln_idx}: {subaln_file}")
-        print(f"{'='*60}")
-        
-        model = np.load(subaln_file, allow_pickle=True).item()
-        J_ord, h_ord = get_params_gauge(model['J'], model['h'])
-        
-        aa_array = np.array([a for a in AA_ALPHABET])
-        aa_to_idx = {aa:i for i, aa in enumerate(AA_ALPHABET)}
-        
-        # Position 10 corresponds to residue 189
-        pos_189 = 10
-        
-        # Start with original sequence
-        previous_seq = rat_trypsin.copy()
-        
-        # Make the D189S mutation
-        print(f"\nInitial mutation: D{nums[pos_189]}S")
-        current_seq = previous_seq.copy()
-        current_seq[pos_189] = 'S'
-        
-        # Perform 4 iterations to find compensatory mutations
-        for iteration in range(4):
-            print(f"\nIteration {iteration + 1}:")
-            
-            # Compute deltaE for previous sequence
-            deltaEs_previous = compute_all_single_mutations_deltaE(previous_seq, h_ord, J_ord, AA_ALPHABET)
-            
-            # Compute deltaE for current sequence
-            deltaEs_current = compute_all_single_mutations_deltaE(current_seq, h_ord, J_ord, AA_ALPHABET)
-            
-            # deltaDeltaE = current - previous
-            deltaDeltaE = deltaEs_current - deltaEs_previous
-            
-            # Find the best mutation
-            residue_idx, aa_idx = get_best_indices(deltaDeltaE)
-            
-            previous_aa = current_seq[residue_idx]
-            next_aa = aa_array[aa_idx]
-            residue_num = nums[residue_idx]
-            
-            print(f"  Best compensatory mutation: {previous_aa}{residue_num}{next_aa}")
-            print(f"  ΔΔE = {deltaDeltaE[residue_idx, aa_idx]:.4f}")
-            
-            # Update for next iteration
-            previous_seq = current_seq.copy()
-            current_seq = current_seq.copy()
-            current_seq[residue_idx] = next_aa
-            
-        print(f"\nFinal sequence after D{nums[pos_189]}S + 4 compensatory mutations:")
-        print(''.join(current_seq))
+#    for subaln_idx, subaln_file in enumerate(glob("./results/*/*.npy")):
+#        print(f"\n{'='*60}")
+#        print(f"Subalignment {subaln_idx}: {subaln_file}")
+#        print(f"{'='*60}")
+#        
+#        model = np.load(subaln_file, allow_pickle=True).item()
+#        J_ord, h_ord = get_params_gauge(model['J'], model['h'])
+#        
+#        aa_array = np.array([a for a in AA_ALPHABET])
+#        aa_to_idx = {aa:i for i, aa in enumerate(AA_ALPHABET)}
+#        
+#        # Position 10 corresponds to residue 189
+#        pos_189 = 10
+#        
+#        # Start with original sequence
+#        previous_seq = rat_trypsin.copy()
+#        
+#        # Make the D189S mutation
+#        print(f"\nInitial mutation: D{nums[pos_189]}S")
+#        current_seq = previous_seq.copy()
+#        current_seq[pos_189] = 'S'
+#        
+#        # Perform 4 iterations to find compensatory mutations
+#        for iteration in range(4):
+#            print(f"\nIteration {iteration + 1}:")
+#            
+#            # Compute deltaE for previous sequence
+#            deltaEs_previous = compute_all_single_mutations_deltaE(previous_seq, h_ord, J_ord, AA_ALPHABET)
+#            
+#            # Compute deltaE for current sequence
+#            deltaEs_current = compute_all_single_mutations_deltaE(current_seq, h_ord, J_ord, AA_ALPHABET)
+#            
+#            # deltaDeltaE = current - previous
+#            deltaDeltaE = deltaEs_current - deltaEs_previous
+#            
+#            # Find the best mutation
+#            residue_idx, aa_idx = get_best_indices(deltaDeltaE)
+#            
+#            previous_aa = current_seq[residue_idx]
+#            next_aa = aa_array[aa_idx]
+#            residue_num = nums[residue_idx]
+#            
+#            print(f"  Best compensatory mutation: {previous_aa}{residue_num}{next_aa}")
+#            print(f"  ΔΔE = {deltaDeltaE[residue_idx, aa_idx]:.4f}")
+#            
+#            # Update for next iteration
+#            previous_seq = current_seq.copy()
+#            current_seq = current_seq.copy()
+#            current_seq[residue_idx] = next_aa
+#            
+#        print(f"\nFinal sequence after D{nums[pos_189]}S + 4 compensatory mutations:")
+#        print(''.join(current_seq))
