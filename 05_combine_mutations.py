@@ -10,17 +10,25 @@ POS_ALIGN_Yip = np.array(['16', '17', '18', '19', '20', '21', '22', '23', '24', 
 red_sector = [197, 239, 237, 224, 186, 225, 189, 190, 200, 227, 228, 222, 238, 2, 229, 164, 195, 194, 231, 165, 176, 1]
 red_sector = sorted(red_sector)
 
+marion_red_sector = [224,197,239,237,225,227,186,200,189,228,190,194,2,229,195,231,164,88,183,222,107,23,21]
+marion_red_sector = sorted(marion_red_sector)
+
 align_yip_red = POS_ALIGN_Yip[red_sector]
+align_mar_red = POS_ALIGN_Yip[marion_red_sector]
+
+SEQ_3TGI_YIP = 'IVGGYTCQENSVPYQVSLNS-----GYHFCGGSLINDQWVVSAAHCYKS-------RIQVRLGEHNIN-VLEGNEQFVNAAKIIKHPNFDR--KTLNNDIMLIKLSSPVKLNARVATV-ALPS---SCAP-AG-TQCLISGWGNTLSSG----VNEPDLLQCLDAPLLPQADCEASYP--GKITDNMVCVGFLEGGKDSCQGDSGGPVVCN-----GELQGIVSWGY--GCALPDNPGVYTKVCNYVDWIQDTIAAN---'
+Seq = np.array([s for s in SEQ_3TGI_YIP])[marion_red_sector]
+SEQ_3TGI_YIP_RedSec = "".join(list(Seq))
 
 for i in range(10):
     print(f"===\nALIGNMENT N. {i}\n===")
-    path_mod = f'./results/SerProt_SubAln_{i}/SerProt_SubAln_{i}_ModelSBM_N_chains50_N_iter400_Param_initzero_k_MCMC100000_lambda_J0.0_lambda_h0_m1_theta0.3_N_Av1_R0.npy'
+    path_mod = f'./results/RedSecMar_SubAln_{i}/RedSecMar_SubAln_{i}_ModelSBM_N_chains50_N_iter400_Param_initzero_k_MCMC100000_lambda_J0.0_lambda_h0_m1_theta0.3_N_Av1_R0.npy'
     Nb_mut = 5
     CompMut_DDE = uc.Propose_Mutation_DDE2(
             path_mod,
             Nb_mut,
             [('S','189')],
-            POS_ALIGN=align_yip_red,
-            SEQ_REF='VGAPYMVGGGDQVWG--GAGVY')
+            POS_ALIGN=align_mar_red,
+            SEQ_REF=SEQ_3TGI_YIP_RedSec)
 #CompMut_3TGI_numbering = ut.Convert_CompMut_in_3TGI_Indices(CompMut_DDE)
 #print(CompMut_3TGI_numbering)

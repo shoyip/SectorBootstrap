@@ -39,7 +39,8 @@ sector = input("Enter sector residues separated by commas [red_sector]: ")
 if sector == "":
     sector = [1, 2, 164, 165, 176, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 238, 239]
 else:
-    sector = sector.split(",")
+    sector = map(int, sector.split(","))
+sector = sorted(sector)
 
 # set the seed
 np.random.seed(42)
