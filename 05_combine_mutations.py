@@ -22,7 +22,7 @@ SEQ_3TGI_YIP_RedSec = "".join(list(Seq))
 
 for i in range(10):
     print(f"===\nALIGNMENT N. {i}\n===")
-    path_mod = f'./results/RedSecMar_SubAln_{i}/RedSecMar_SubAln_{i}_ModelSBM_N_chains50_N_iter400_Param_initzero_k_MCMC100000_lambda_J0.0_lambda_h0_m1_theta0.3_N_Av1_R0.npy'
+    path_mod = f'./results/RedSecMar_SubAln_{i}/RedSecMar_SubAln_{i}_ModelSBM_N_chains500_N_iter1000_Param_initzero_k_MCMC5000_lambda_J0.01_lambda_h0_m1_theta0.15_N_Av1_R0.npy'
     Nb_mut = 5
     CompMut_DDE = uc.Propose_Mutation_DDE2(
             path_mod,

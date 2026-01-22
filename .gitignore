@@ -9,3 +9,6 @@ wheels/
 # Virtual environments
 .venv
 .venv_sb
+
+# heavy folders
+results_grid/
