@@ -12,3 +12,5 @@ wheels/
 
 # heavy folders
 results_grid/
+data/
+results/
