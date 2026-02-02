@@ -35,9 +35,11 @@ else:
     K = int(K)
 
 # enter the sector residues
-sector = input("Enter sector residues separated by commas [red_sector]: ")
+sector = input("Enter sector residues separated by commas [red_sector/all/list]: ")
 if sector == "":
     sector = [1, 2, 164, 165, 176, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 238, 239]
+elif sector == "all":
+    sector = list(np.arange(0, N))
 else:
     sector = map(int, sector.split(","))
 sector = sorted(sector)
