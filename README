@@ -1,1 +1,25 @@
+# Intro
+
+# Notes
+
+## 11. Shuffle only sector
+
+## Milo's data generation procedure
+
+The idea to generate the bootstrapped full alignments is the following:
+
+1. Take the full length alignment of sequences.
+2. We do not use weighted sampling, because apparently it biases the sampling
+towards densely populated regions and undersamples sparsely populated regions.
+3. Saves the bootstrapped alignments as NumPy files.
+
+For the bootstrapped short alignments:
+
+1. We take the full length alignment of sequences.
+2. We take only the columns corresponding to the red sector.
+3. We take the unique sequences.
+4. Among the unique sequences, sample uniformly a lesser amount of sequences.
+
+# Archive
+
 Neff = 25889
