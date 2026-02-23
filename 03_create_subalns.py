@@ -97,7 +97,7 @@ p = w / np.sum(w)
 subset_indices = np.random.choice(np.arange(0, M), size=[K, M_eff], p=p)
 
 # mask the description and sequence arrays to produce new sub-alignments
-aln_subsets = letter_to_int(np.take(aln_redsector, subset_indices, axis=0))
+aln_subsets = np.take(aln_redsector, subset_indices, axis=0)
 desc_subsets = np.take(desc_redsector, subset_indices, axis=0)
 
 print("Saving subalignments...")
@@ -109,8 +109,12 @@ if not os.path.exists(path):
 for idx, (desc_subset, aln_subset) in enumerate(zip(desc_subsets, aln_subsets)):
     np.save("./data/"+subset_folder_name+"/subaln"+str(idx)+"_seq.npy", aln_subset)
     np.save("./data/"+subset_folder_name+"/subaln"+str(idx)+"_desc.npy", desc_subset)
+    
+    # Save weights for each subalignment (take from precomputed weights using subset indices)
+    w_subaln = w[subset_indices[idx]]
+    np.save("./data/"+subset_folder_name+"/subaln"+str(idx)+"_weights.npy", w_subaln)
 
-print("Subalignments saved in folder ./data/subalns")
+print("Subalignments and weights saved in folder ./data/subalns")
 print("Done with the preparation of datasets!")
 
 # for M_sub in [1_000, 2_000, 4_000, 6_000, 8_000]:
