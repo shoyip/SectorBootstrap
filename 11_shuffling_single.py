@@ -1,9 +1,10 @@
-# Single-step shuffling training for SLURM parallelization (sector-only)
-# Usage: python 11_shuffling_single.py <step_number> [--aln_file <path>]
+# Single-step shuffling training for SLURM parallelization (sector subalignments)
+# Usage: python 11_shuffling_single.py <subaln_idx> <step_number>
 #
-# Steps:
+# subaln_idx: 0-9 (which subalignment to use)
+# step:
 #   0: No shuffling (baseline)
-#   1-23: Progressive sector column shuffling
+#   1-23: Progressive sector column shuffling (23 columns, marion_red_sector)
 
 import numpy as np
 import argparse
@@ -15,21 +16,6 @@ import SBM
 
 ROOT = Path(SBM.__file__).resolve().parents[2] 
 results_dir = ROOT / ".." / "results"
-
-# letters_to_int function (from 03_create_subalns.py)
-def letters_to_int(aln, alphabet='-ACDEFGHIKLMNPQRSTVWY'):
-    if isinstance(alphabet, str):
-        alphabet = list(alphabet)
-    else:
-        raise ValueError("'alphabet' must be a string.")
-    letter_to_int = {letter: i for i, letter in enumerate(alphabet)}
-    return np.vectorize(letter_to_int.get)(aln)
-
-def deduplicate_sequences(aln):
-    """Remove duplicate sequences from alignment, return unique sequences."""
-    unique_seqs, indices = np.unique(aln, axis=0, return_index=True)
-    print(f"Deduplicated: {aln.shape[0]} -> {unique_seqs.shape[0]} sequences")
-    return unique_seqs
 
 # run_SBM function (from SBM-CM-family.py)
 def run_SBM(Input_MSA, fam, Model='SBM', N_iter=1000, m=1, N_chains=500, Nb_av=10, k_MCMC=5000, 
@@ -126,53 +112,51 @@ def shuffle_columns(alignment, columns_to_shuffle):
     return shuffled_aln
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Single-step shuffling SBM training (sector-only)')
+    parser = argparse.ArgumentParser(description='Single-step shuffling SBM training (sector subalignments)')
+    parser.add_argument('subaln_idx', type=int, help='Subalignment index (0-9)')
     parser.add_argument('step', type=int, help='Step number (0-23)')
-    parser.add_argument('--aln_file', type=str, default='./data/full_aln.npz', help='Alignment file path')
+    parser.add_argument('--subaln_dir', type=str, default='./data/subalns', help='Subalignments directory')
     args = parser.parse_args()
 
-    # Load alignment
-    aln = np.load(args.aln_file)
-    M, N = aln['seq'].shape
-    print(f"Loaded alignment: {M} sequences, {N} positions")
+    # Load subalignment (already sector-only, deduplicated, weighted sampled)
+    subaln_file = f"{args.subaln_dir}/subaln{args.subaln_idx}_seq.npy"
+    aln = np.load(subaln_file)
+    M, L_sector = aln.shape
+    print(f"Loaded subalignment {args.subaln_idx}: {M} sequences, {L_sector} positions")
 
-    # Sector residues (from 05_combine_mutations.py marion_red_sector, sorted)
-    sector = [2, 21, 23, 88, 107, 164, 183, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 239]
-    L_sector = len(sector)
-    print(f"Sector columns: {L_sector} positions")
+    # Sector columns from 03_create_subalns.py (23 columns, marion_red_sector sorted)
+    # marion_red_sector = [2, 21, 23, 88, 107, 164, 183, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 239]
+    # These map to indices 0-22 in the subalignment
 
     # Sector columns ordered by increasing relevance (from 05_combine_mutations.py marion_red_sector reversed)
-    # These are indices into the SECTOR alignment (0 to 22), not the full alignment
-    marion_red_sector_full = [21, 23, 107, 222, 183, 88, 164, 231, 195, 229, 2, 194, 190, 228, 189, 200, 186, 227, 225, 237, 239, 197, 224]
-    # Map full alignment indices to sector indices
-    sector_to_idx = {col: idx for idx, col in enumerate(sector)}
-    sector_by_relevance = [sector_to_idx[col] for col in marion_red_sector_full if col in sector_to_idx]
-    print(f"Shuffling order (sector indices): {sector_by_relevance}")
+    marion_red_sector_sorted = [2, 21, 23, 88, 107, 164, 183, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 239]
+    sector_to_idx = {col: idx for idx, col in enumerate(marion_red_sector_sorted)}
+    
+    # marion_red_sector in increasing relevance order (reversed from original decreasing order)
+    marion_red_sector_by_relevance = [21, 23, 107, 222, 183, 88, 164, 231, 195, 229, 2, 194, 190, 228, 189, 200, 186, 227, 225, 237, 239, 197, 224]
+    # Map to subalignment indices (0-22)
+    sector_by_relevance = [sector_to_idx[col] for col in marion_red_sector_by_relevance]
+    print(f"Shuffling order (subaln indices): {sector_by_relevance}")
+    print(f"Number of sector columns to shuffle: {len(sector_by_relevance)}")
 
     # Set seed for reproducibility
     np.random.seed(42)
 
-    # Convert to integer alignment and extract sector columns only
-    aln_int = letters_to_int(aln['seq'])
-    aln_sector = aln_int[:, sector]
-    print(f"Extracted sector alignment: {aln_sector.shape}")
-
-    # Deduplicate identical sequences
-    aln_unique = deduplicate_sequences(aln_sector)
-
     # Parameters: Nav=10, Nchains=500, Niter=1000, kMCMC=5000, lambdaJ=0.01, theta=0.15
 
     step = args.step
-    max_step = L_sector  # 0 = no shuffle, 1-23 = progressive shuffling
+    max_step = len(sector_by_relevance)  # 0 = no shuffle, 1-N = progressive shuffling
 
     if step > max_step:
         print(f"Error: step {step} is out of range (max step is {max_step})")
         exit(1)
 
+    subaln_idx = args.subaln_idx
+
     if step == 0:
         # Step 0: no shuffling (baseline)
-        print(f"Step {step}: Training SBM on sector alignment with no shuffling...")
-        run_SBM(aln_unique, fam="SectorShuffling_Step00_NoShuffle")
+        print(f"SubAln {subaln_idx}, Step {step}: Training SBM with no shuffling...")
+        run_SBM(aln, fam=f"SectorShuffling_SubAln{subaln_idx}_Step00_NoShuffle")
 
     else:
         # Steps 1+: progressive sector column shuffling
@@ -180,7 +164,7 @@ if __name__ == "__main__":
         columns_to_shuffle = sector_by_relevance[:sector_idx + 1]
         col_full = marion_red_sector_full[sector_idx]  # original column index for naming
 
-        print(f"Step {step}: Shuffling {sector_idx + 1}/{L_sector} sector columns...")
-        print(f"Columns shuffled (sector indices): {columns_to_shuffle}")
-        aln_shuffled = shuffle_columns(aln_unique, columns_to_shuffle)
-        run_SBM(aln_shuffled, fam=f"SectorShuffling_Step{step:02d}_Col{col_full}")
+        print(f"SubAln {subaln_idx}, Step {step}: Shuffling {sector_idx + 1}/{len(sector_by_relevance)} columns...")
+        print(f"Columns shuffled (subaln indices): {columns_to_shuffle}")
+        aln_shuffled = shuffle_columns(aln, columns_to_shuffle)
+        run_SBM(aln_shuffled, fam=f"SectorShuffling_SubAln{subaln_idx}_Step{step:02d}_Col{col_full}")

@@ -64,9 +64,10 @@ print(f"FASTA file imported. There are {M} rows and {N} columns in the full alig
 # w = np.load(w_file)
 
 # define sector and reduce the alignment only to sector columns
-print("Reducing the alignment to only columns of the red sector...")
-redsector = [1, 2, 164, 165, 176, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 238, 239]
-aln_redsector = aln[:, redsector]
+# using marion_red_sector (23 columns) from 05_combine_mutations.py
+print("Reducing the alignment to only columns of the marion red sector...")
+marion_red_sector = [2, 21, 23, 88, 107, 164, 183, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 239]
+aln_redsector = aln[:, marion_red_sector]
 
 # deduplicate the alignment
 print("Deduplicating the alignment...")
