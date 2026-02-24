@@ -97,7 +97,7 @@ p = w / np.sum(w)
 subset_indices = np.random.choice(np.arange(0, M), size=[K, M_eff], p=p)
 
 # mask the description and sequence arrays to produce new sub-alignments
-aln_subsets = letter_to_int(np.take(aln_redsector, subset_indices, axis=0))
+aln_subsets = np.take(aln_redsector, subset_indices, axis=0)
 desc_subsets = np.take(desc_redsector, subset_indices, axis=0)
 
 print("Saving subalignments...")
