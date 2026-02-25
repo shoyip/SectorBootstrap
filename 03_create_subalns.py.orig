@@ -94,21 +94,14 @@ np.random.seed(42)
 print("Making subalignments...")
 K = 10
 p = w / np.sum(w)
-subset_folder_name = "subalns"
-path = "./data/"+subset_folder_name
-if not os.path.exists(path):
-    os.mkdir(path)
 for idx in range(K):
-    print(f"Preparing subalignment #{idx}...")
     subset_idx = np.random.choice(np.arange(M), size=M_eff, p=p)
     aln_subset = aln_redsector[subset_idx]
     desc_subset = desc_redsector[subset_idx]
-    w_subset, M_eff_subset = compute_weights(aln_subset, dist_threshold=0.15)
-    print(f"Subalignment has Meff={M_eff_subset}")
 
+<<<<<<< HEAD
     np.save(f"./data/{subset_folder_name}/subaln{idx}_seq.npy", aln_subset)
     np.save(f"./data/{subset_folder_name}/subaln{idx}_desc.npy", desc_subset)
-    np.save(f"./data/{subset_folder_name}/subaln{idx}_weights.npy", w_subset)
 #subset_indices = np.random.choice(np.arange(0, M), size=[K, M_eff], p=p)
 #
 ## mask the description and sequence arrays to produce new sub-alignments
@@ -124,6 +117,25 @@ for idx in range(K):
 #for idx, (desc_subset, aln_subset) in enumerate(zip(desc_subsets, aln_subsets)):
 #    np.save("./data/"+subset_folder_name+"/subaln"+str(idx)+"_seq.npy", aln_subset)
 #    np.save("./data/"+subset_folder_name+"/subaln"+str(idx)+"_desc.npy", desc_subset)
+=======
+# mask the description and sequence arrays to produce new sub-alignments
+aln_subsets = np.take(aln_redsector, subset_indices, axis=0)
+desc_subsets = np.take(desc_redsector, subset_indices, axis=0)
+
+print("Saving subalignments...")
+subset_folder_name = "subalns"
+path = "./data/"+subset_folder_name
+if not os.path.exists(path):
+    os.mkdir(path)
+
+for idx, (desc_subset, aln_subset) in enumerate(zip(desc_subsets, aln_subsets)):
+    np.save("./data/"+subset_folder_name+"/subaln"+str(idx)+"_seq.npy", aln_subset)
+    np.save("./data/"+subset_folder_name+"/subaln"+str(idx)+"_desc.npy", desc_subset)
+    
+    # Save weights for each subalignment (take from precomputed weights using subset indices)
+    w_subaln = w[subset_indices[idx]]
+    np.save("./data/"+subset_folder_name+"/subaln"+str(idx)+"_weights.npy", w_subaln)
+>>>>>>> ba966dc05195fb8a86cec1f286e522572a2c6f18
 
 print("Subalignments and weights saved in folder ./data/subalns")
 print("Done with the preparation of datasets!")

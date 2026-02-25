@@ -18,7 +18,7 @@ ROOT = Path(SBM.__file__).resolve().parents[2]
 results_dir = ROOT / ".." / "results"
 
 # run_SBM function (from SBM-CM-family.py)
-def run_SBM(Input_MSA, fam, Model='SBM', N_iter=1000, m=1, N_chains=500, Nb_av=10, k_MCMC=5000, 
+def run_SBM(Input_MSA, fam, weights=None, Model='SBM', N_iter=1000, m=1, N_chains=500, Nb_av=10, k_MCMC=5000, 
             ParamInit='zero', lambdJ=0.01, lambdh=0, theta=0.15):
     fam = str(fam)
     
@@ -38,7 +38,7 @@ def run_SBM(Input_MSA, fam, Model='SBM', N_iter=1000, m=1, N_chains=500, Nb_av=1
                         ('Pruning', False), ('Pruning Mask', None),
                         ('Param_init', ParamInit),
                         ('Test/Train', False), ('Train sequences', None),
-                        ('Weights', None), ('SGD', None),
+                        ('Weights', weights), ('SGD', None),
                         ('Seed', None), ('Zero Fields', False), 
                         ('Store Parameters', None)])
 
@@ -120,22 +120,19 @@ if __name__ == "__main__":
 
     # Load subalignment (already sector-only, deduplicated, weighted sampled)
     subaln_file = f"{args.subaln_dir}/subaln{args.subaln_idx}_seq.npy"
-    aln = np.load(subaln_file)
+    aln = np.load(subaln_file, allow_pickle=True)
     M, L_sector = aln.shape
     print(f"Loaded subalignment {args.subaln_idx}: {M} sequences, {L_sector} positions")
 
-    # Sector columns from 03_create_subalns.py (23 columns, marion_red_sector sorted)
-    # marion_red_sector = [2, 21, 23, 88, 107, 164, 183, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 239]
-    # These map to indices 0-22 in the subalignment
+    # Load precomputed weights
+    weights_file = f"{args.subaln_dir}/subaln{args.subaln_idx}_weights.npy"
+    weights = np.load(weights_file, allow_pickle=True)
+    print(f"Loaded weights for subalignment {args.subaln_idx}")
 
-    # Sector columns ordered by increasing relevance (from 05_combine_mutations.py marion_red_sector reversed)
-    marion_red_sector_sorted = [2, 21, 23, 88, 107, 164, 183, 186, 189, 190, 194, 195, 197, 200, 222, 224, 225, 227, 228, 229, 231, 237, 239]
-    sector_to_idx = {col: idx for idx, col in enumerate(marion_red_sector_sorted)}
-    
-    # marion_red_sector in increasing relevance order (reversed from original decreasing order)
-    marion_red_sector_by_relevance = [21, 23, 107, 222, 183, 88, 164, 231, 195, 229, 2, 194, 190, 228, 189, 200, 186, 227, 225, 237, 239, 197, 224]
-    # Map to subalignment indices (0-22)
-    sector_by_relevance = [sector_to_idx[col] for col in marion_red_sector_by_relevance]
+    # Subalignment has 23 columns (indices 0-22)
+    # Shuffling order by increasing relevance (least relevant first, most relevant last)
+    # Derived from marion_red_sector relevance order mapped to subalignment indices
+    sector_by_relevance = [1, 2, 4, 14, 6, 3, 5, 20, 11, 19, 0, 10, 9, 18, 8, 13, 7, 17, 16, 21, 22, 12, 15]
     print(f"Shuffling order (subaln indices): {sector_by_relevance}")
     print(f"Number of sector columns to shuffle: {len(sector_by_relevance)}")
 
@@ -156,15 +153,15 @@ if __name__ == "__main__":
     if step == 0:
         # Step 0: no shuffling (baseline)
         print(f"SubAln {subaln_idx}, Step {step}: Training SBM with no shuffling...")
-        run_SBM(aln, fam=f"SectorShuffling_SubAln{subaln_idx}_Step00_NoShuffle")
+        run_SBM(aln, fam=f"SectorShuffling_SubAln{subaln_idx}_Step00_NoShuffle", weights=weights)
 
     else:
         # Steps 1+: progressive sector column shuffling
         sector_idx = step - 1
         columns_to_shuffle = sector_by_relevance[:sector_idx + 1]
-        col_full = marion_red_sector_full[sector_idx]  # original column index for naming
+        col = sector_by_relevance[sector_idx]  # 0-based subalignment column index
 
         print(f"SubAln {subaln_idx}, Step {step}: Shuffling {sector_idx + 1}/{len(sector_by_relevance)} columns...")
         print(f"Columns shuffled (subaln indices): {columns_to_shuffle}")
         aln_shuffled = shuffle_columns(aln, columns_to_shuffle)
-        run_SBM(aln_shuffled, fam=f"SectorShuffling_SubAln{subaln_idx}_Step{step:02d}_Col{col_full}")
+        run_SBM(aln_shuffled, fam=f"SectorShuffling_SubAln{subaln_idx}_Step{step:02d}_Col{col}", weights=weights)
