@@ -5,7 +5,7 @@ from pathlib import Path
 import SBM
 
 ROOT = Path(SBM.__file__).resolve().parents[2]
-results_dir = ROOT / ".." / "results"
+results_dir = ROOT / "models"
 
 def run_SBM(Input_MSA, fam, weights=None, Model='SBM', N_iter=1000, m=1, N_chains=500, Nb_av=10, k_MCMC=5000,
             ParamInit='zero', lambdJ=0.01, lambdh=0, theta=0.15):
