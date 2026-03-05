@@ -2,7 +2,7 @@
 #SBATCH --job-name=param_nchains
 #SBATCH --output=logs/params_nchains_%a.out
 #SBATCH --error=logs/params_nchains_%a.err
-#SBATCH --array=1,5,25,50,75,100,200,300,400
+#SBATCH --array=1,2,3,4,7
 #SBATCH --time=24:00:00
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
