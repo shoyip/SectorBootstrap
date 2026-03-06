@@ -9,7 +9,7 @@ current_dir = Path(__file__).resolve()
 models_dir = current_dir / "models"
 
 def shuffle_columns(aln, cols_to_shuffle):
-    shuffled_aln = np.copy(alignment)
+    shuffled_aln = np.copy(aln)
     for col in cols_to_shuffle:
         np.random.shuffle(shuffled_aln[:, col])
     return shuffled_aln
@@ -30,7 +30,11 @@ if __name__ == "__main__":
     weights = np.load(weights_file, allow_pickle=True)
     print(f"Loaded weights for subalignment {args.subaln_idx}, Meff={np.sum(weights)}")
 
-    sector_by_relevance = [224,197,239,237,225,227,186,200,189,228,190,194,2,229,195,231,164,88,183,222,107,23,21]
+    sector_indices = [224,197,239,237,225,227,186,200,189,228,190,194,2,229,195,231,164,88,183,222,107,23,21]
+    sorted_nums = sorted(sector_indices)
+    rank = {v: i+1 for i, v in enumerate(sorted_nums)}
+
+    sector_by_relevance = [rank[n] for n in sector_indices]
     sector_by_relevance.reverse()
     print(f"Shuffling order: {sector_by_relevance}")
     print(f"Number of residues to shuffle: {len(sector_by_relevance)}")
@@ -59,7 +63,7 @@ if __name__ == "__main__":
         print(f"subaln #{subaln_idx}, step {step}, column {sector_by_relevance[sector_idx]} shuffled...")
         cols_to_shuffle = sector_by_relevance[:sector_idx+1]
         col = sector_by_relevance[sector_idx]
-        aln_shuffled = shuffle_columns(aln, columns_to_shuffle)
+        aln_shuffled = shuffle_columns(aln, cols_to_shuffle)
         run_SBM(
                 aln_shuffled,
                 fam = f"SectorShuffling_SubAln{subaln_idx}_Step{step:02d}_Col{col}",

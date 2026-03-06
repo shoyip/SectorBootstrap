@@ -19,6 +19,6 @@ echo "Subalignment: ${SUBALN_IDX}"
 echo "Step: ${STEP}"
 
 # Run the single-step training script
-python 05_shuffling.py ${SUBALN_IDX} ${STEP} --subaln_dir ./data/subalns
+python 05_shuffling.py ${SUBALN_IDX} ${STEP} ./data/subalns
 
 echo "SubAln ${SUBALN_IDX}, Step ${STEP} completed."
