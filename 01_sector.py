@@ -35,6 +35,8 @@ if __name__ == "__main__":
     
     print("It took", time_end - time_start, "seconds and", sys.getsizeof(sca_matrix) / 1024**2, "MB.")
     
+    ica_components = ct.decomposition.extract_independent_components(sca_matrix, n_components=3)
+    print(ica_components)
     sectors = extract_xcors(sca_matrix)
 
     get_sequence_sectors(rat_trypsin, sectors, colors=['green', 'red', 'blue'])
