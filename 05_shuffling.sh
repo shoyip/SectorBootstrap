@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=sector_shuffle
-#SBATCH --output=logs/sector_shuffle_%a.out
-#SBATCH --error=logs/sector_shuffle_%a.err
+#SBATCH --job-name=shuffling
+#SBATCH --output=logs/shuffling_%a.out
+#SBATCH --error=logs/shuffling_%a.err
 #SBATCH --array=0-239
 #SBATCH --time=24:00:00
 #SBATCH --mem=16G

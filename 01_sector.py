@@ -40,5 +40,7 @@ if __name__ == "__main__":
     get_sequence_sectors(rat_trypsin, sectors, colors=['green', 'red', 'blue'])
 
     print("The RED SECTOR indices in order of relevance is:", ', '.join(map(str, sectors[1])))
-    red_sector_indices = (sectors[1])
+    red_sector_indices = np.array(sectors[1])
     print("In the TRYPSIN NUMBERING we have", ', '.join(np.array(nums)[red_sector_indices]))
+
+    np.save(red_sector_indices, "./data/red_sector_indices.py")
