@@ -35,8 +35,7 @@ if __name__ == "__main__":
     
     print("It took", time_end - time_start, "seconds and", sys.getsizeof(sca_matrix) / 1024**2, "MB.")
     
-    ica_components = ct.decomposition.extract_independent_components(sca_matrix, n_components=3)
-    print(ica_components)
+    ica_components = extract_independent_components(sca_matrix, n_components=3)
     sectors = extract_xcors(sca_matrix)
 
     get_sequence_sectors(rat_trypsin, sectors, colors=['green', 'red', 'blue'])
@@ -45,4 +44,5 @@ if __name__ == "__main__":
     red_sector_indices = np.array(sectors[1])
     print("In the TRYPSIN NUMBERING we have", ', '.join(np.array(nums)[red_sector_indices]))
 
-    np.save(red_sector_indices, "./data/red_sector_indices.py")
+    np.save("./data/red_sector_indices.npy", red_sector_indices)
+    np.save("./data/red_sector_eigvals.npy", ica_components[1, :])

@@ -2,7 +2,7 @@
 #SBATCH --job-name=shuffling
 #SBATCH --output=logs/shuffling_%a.out
 #SBATCH --error=logs/shuffling_%a.err
-#SBATCH --array=0-239
+#SBATCH --array=0-229
 #SBATCH --time=24:00:00
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
@@ -11,8 +11,8 @@
 mkdir -p logs
 
 # Calculate subalignment index and step from array task ID
-SUBALN_IDX=$((SLURM_ARRAY_TASK_ID / 24))
-STEP=$((SLURM_ARRAY_TASK_ID % 24))
+SUBALN_IDX=$((SLURM_ARRAY_TASK_ID / 23))
+STEP=$((SLURM_ARRAY_TASK_ID % 23))
 
 echo "Task ID: ${SLURM_ARRAY_TASK_ID}"
 echo "Subalignment: ${SUBALN_IDX}"

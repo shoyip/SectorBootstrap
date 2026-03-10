@@ -17,7 +17,7 @@ def shuffle_columns(aln, cols_to_shuffle):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train SBMs with alignments that have shuffled columns.")
     parser.add_argument("subaln_idx", type=int, help="Index of previously generated subalignment (0-9)")
-    parser.add_argument("step", type=int, help="Step number from least to most important residue (0-23)")
+    parser.add_argument("step", type=int, help="Step number from least to most important residue (0-22)")
     parser.add_argument("subaln_dir", type=str, default="./data/subalns", help="Directory where subalignments can be found.")
     args = parser.parse_args()
 
@@ -30,12 +30,9 @@ if __name__ == "__main__":
     weights = np.load(weights_file, allow_pickle=True)
     print(f"Loaded weights for subalignment {args.subaln_idx}, Meff={np.sum(weights)}")
 
-    sector_indices = [224,197,239,237,225,227,186,200,189,228,190,194,2,229,195,231,164,88,183,222,107,23,21]
-    sorted_nums = sorted(sector_indices)
-    rank = {v: i+1 for i, v in enumerate(sorted_nums)}
-
-    sector_by_relevance = [rank[n] for n in sector_indices]
-    sector_by_relevance.reverse()
+    sector_by_relevance = np.load("./data/red_sector_indices.npy")[::-1]
+    rank_sector = np.empty_like(sector_by_relevance)
+    rank_sector[np.argsort(sector_by_relevance)] = np.arange(len(sector_by_relevance))
     print(f"Shuffling order: {sector_by_relevance}")
     print(f"Number of residues to shuffle: {len(sector_by_relevance)}")
 
@@ -61,7 +58,7 @@ if __name__ == "__main__":
     else:
         sector_idx = step - 1
         print(f"subaln #{subaln_idx}, step {step}, column {sector_by_relevance[sector_idx]} shuffled...")
-        cols_to_shuffle = sector_by_relevance[:sector_idx+1]
+        cols_to_shuffle = rank_sector[:sector_idx+1]
         col = sector_by_relevance[sector_idx]
         aln_shuffled = shuffle_columns(aln, cols_to_shuffle)
         run_SBM(
