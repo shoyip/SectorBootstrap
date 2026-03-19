@@ -51,7 +51,7 @@ if __name__ == "__main__":
                 k_MCMC = 5000,
                 m = 1,
                 N_iter = 1000,
-                Nb_av = 10,
+                Nb_av = 1,
                 lambdJ = 0,
                 lambdh = 0
         )

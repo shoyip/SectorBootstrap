@@ -5,7 +5,7 @@ import sys
 
 from cocoatree.io import load_MSA
 from cocoatree.statistics.pairwise import compute_sca_matrix
-from cocoatree.decomposition import extract_independent_components, extract_xcors
+from cocoatree.deconvolution import extract_independent_components, extract_xcors
 
 def get_sequence_sectors(sequence, sectors, colors=['red', 'green', 'blue']):
     colored_string_list = []
@@ -20,6 +20,22 @@ def get_sequence_sectors(sequence, sectors, colors=['red', 'green', 'blue']):
         else:
             print('error')
     return print(''.join(colored_string_list))
+
+def _index_from_nums(nums, target_num: str) -> int:
+    try:
+        return nums.index(target_num)
+    except ValueError as e:
+        raise ValueError(f"Could not find residue number {target_num!r} in nums.") from e
+
+def _sector_containing_index(sectors, residue_index: int) -> int:
+    containing = [i for i, sector in enumerate(sectors) if residue_index in sector]
+    if len(containing) == 0:
+        raise ValueError(f"No sector contains residue index {residue_index}.")
+    if len(containing) > 1:
+        raise ValueError(
+            f"Residue index {residue_index} appears in multiple sectors: {containing}"
+        )
+    return containing[0]
 
 if __name__ == "__main__":
     dataset = list(map(np.array, load_MSA('./data/iter_aln_dedup_sp.faa').values()))
@@ -38,11 +54,80 @@ if __name__ == "__main__":
     ica_components = extract_independent_components(sca_matrix, n_components=3)
     sectors = extract_xcors(sca_matrix)
 
-    get_sequence_sectors(rat_trypsin, sectors, colors=['green', 'red', 'blue'])
+    # Select sectors by specific catalytic residues using trypsin numbering.
+    # D189 -> red sector, S195 -> green sector, remaining sector -> blue.
+    # Numbers (189, 195) refer to entries in nums (trypsin residue numbering), not array indices.
+    d189_index = _index_from_nums(nums, '189')
+    if d189_index >= len(rat_trypsin):
+        raise ValueError(
+            f"Residue index for nums['189'] is {d189_index}, but sequence length is {len(rat_trypsin)}."
+        )
+    if rat_trypsin[d189_index] != 'D':
+        raise ValueError(
+            f"Expected D at residue number '189' (index {d189_index}), found {rat_trypsin[d189_index]!r}."
+        )
 
-    print("The RED SECTOR indices in order of relevance is:", ', '.join(map(str, sectors[1])))
-    red_sector_indices = np.array(sectors[1])
-    print("In the TRYPSIN NUMBERING we have", ', '.join(np.array(nums)[red_sector_indices]))
+    s195_index = _index_from_nums(nums, '195')
+    if s195_index >= len(rat_trypsin):
+        raise ValueError(
+            f"Residue index for nums['195'] is {s195_index}, but sequence length is {len(rat_trypsin)}."
+        )
+    if rat_trypsin[s195_index] != 'S':
+        raise ValueError(
+            f"Expected S at residue number '195' (index {s195_index}), found {rat_trypsin[s195_index]!r}."
+        )
 
+    red_sector_idx = _sector_containing_index(sectors, d189_index)
+    green_sector_idx = _sector_containing_index(sectors, s195_index)
+    if red_sector_idx == green_sector_idx:
+        raise ValueError(
+            f"D189 and S195 map to the same sector index {red_sector_idx}, "
+            "cannot assign distinct red and green sectors."
+        )
+
+    if len(sectors) != 3:
+        raise ValueError(
+            f"Expected exactly 3 sectors for red/green/blue assignment, found {len(sectors)}."
+        )
+    all_sector_indices = set(range(len(sectors)))
+    blue_sector_idx_candidates = list(all_sector_indices - {red_sector_idx, green_sector_idx})
+    if len(blue_sector_idx_candidates) != 1:
+        raise ValueError(
+            f"Could not uniquely determine blue sector. "
+            f"Red: {red_sector_idx}, Green: {green_sector_idx}, "
+            f"Remaining: {blue_sector_idx_candidates}"
+        )
+    blue_sector_idx = blue_sector_idx_candidates[0]
+
+    # Build color list aligned with sectors: red for D189 sector, green for S195 sector, blue for remaining sector.
+    colors = []
+    for i in range(len(sectors)):
+        if i == red_sector_idx:
+            colors.append('red')
+        elif i == green_sector_idx:
+            colors.append('green')
+        elif i == blue_sector_idx:
+            colors.append('blue')
+        else:
+            colors.append('blue')
+
+    get_sequence_sectors(rat_trypsin, sectors, colors=colors)
+
+    # Save and report sectors corresponding to D189 (red), S195 (green), and the remaining (blue).
+    print("The RED SECTOR indices in order of relevance is:", ', '.join(map(str, sectors[red_sector_idx])))
+    red_sector_indices = np.array(sectors[red_sector_idx])
+    print("In the TRYPSIN NUMBERING we have (RED):", ', '.join(np.array(nums)[red_sector_indices]))
     np.save("./data/red_sector_indices.npy", red_sector_indices)
-    np.save("./data/red_sector_eigvals.npy", ica_components[1, :])
+    np.save("./data/red_sector_eigvals.npy", ica_components[red_sector_idx, :])
+
+    print("The GREEN SECTOR indices in order of relevance is:", ', '.join(map(str, sectors[green_sector_idx])))
+    green_sector_indices = np.array(sectors[green_sector_idx])
+    print("In the TRYPSIN NUMBERING we have (GREEN):", ', '.join(np.array(nums)[green_sector_indices]))
+    np.save("./data/green_sector_indices.npy", green_sector_indices)
+    np.save("./data/green_sector_eigvals.npy", ica_components[green_sector_idx, :])
+
+    print("The BLUE SECTOR indices in order of relevance is:", ', '.join(map(str, sectors[blue_sector_idx])))
+    blue_sector_indices = np.array(sectors[blue_sector_idx])
+    print("In the TRYPSIN NUMBERING we have (BLUE):", ', '.join(np.array(nums)[blue_sector_indices]))
+    np.save("./data/blue_sector_indices.npy", blue_sector_indices)
+    np.save("./data/blue_sector_eigvals.npy", ica_components[blue_sector_idx, :])

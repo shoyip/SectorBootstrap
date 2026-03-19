@@ -6,25 +6,26 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "biopython>=1.86",
+    "cocoatree",
+    "ete3>=3.1.3",
     "matplotlib>=3.10.8",
+    "pandas>=3.0.1",
     "sbm",
-    "torch==2.4.1",
+    "scikit-learn>=1.8.0",
+    "termcolor>=3.3.0",
     "tqdm>=4.67.1",
 ]
 
 [project.optional-dependencies]
-cpu = ["torch==2.4.1"]
-cu124 = ["torch==2.4.1"]
+cpu = []
+cu124 = []
 
 [tool.uv]
 conflicts = [[{extra = "cpu"}, { extra = "cu124" }]]
 
 [tool.uv.sources]
-torch = [
-  { index = "pytorch-cpu", extra = "cpu" },
-  { index = "pytorch-cu124", extra = "cu124" },
-]
 sbm = { git = "https://github.com/StatBio/Stochastic-Boltzmann-Machine" }
+cocoatree = { git = "https://github.com/TrEE-TIMC/cocoatree" }
 
 [[tool.uv.index]]
 # The pytorch-cpu index is used to install the torch, torchvision, and torchaudio packages

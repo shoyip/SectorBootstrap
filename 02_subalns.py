@@ -74,7 +74,7 @@ print(f"Alignment reduced to red sector and deduplicated. There are {M} rows and
 
 # compute weights
 start = time.perf_counter()
-w, M_eff = compute_weights(aln_redsector, dist_threshold=0.15)
+w, M_eff = compute_weights(aln_redsector, dist_threshold=0.3)
 M_eff = int(M_eff)
 stop = time.perf_counter()
 print(f"It took {stop-start:.3f} seconds.")
