@@ -5,7 +5,7 @@ import sys
 
 from cocoatree.io import load_MSA
 from cocoatree.statistics.pairwise import compute_sca_matrix
-from cocoatree.deconvolution import extract_independent_components, extract_xcors
+from cocoatree.decomposition import extract_independent_components, extract_xcors
 
 def get_sequence_sectors(sequence, sectors, colors=['red', 'green', 'blue']):
     colored_string_list = []

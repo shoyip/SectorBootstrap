@@ -24,4 +24,4 @@ if __name__ == "__main__":
     w_file = f"./data/subalns/subaln{args.subaln_idx}_weights.npy"
     w = np.load(w_file, allow_pickle=True)
 
-    run_SBM(aln, fam="SectorSubaln0", weights=w, N_chains=args.n_chains, k_MCMC=5000, m=1, N_iter=1000, Nb_av=10, lambdJ=0, lambdh=0)
+    run_SBM(aln, fam="SectorSubaln0", weights=w, N_chains=args.n_chains, k_MCMC=10000, m=1, N_iter=1000, Nb_av=10, lambdJ=0, lambdh=0)

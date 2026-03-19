@@ -2,7 +2,7 @@
 #SBATCH --job-name=params
 #SBATCH --output=logs/params_%a.out
 #SBATCH --error=logs/params_%a.err
-#SBATCH --array=1,2,3,4,7
+#SBATCH --array=1,2,4,8,16,32,64,128,256,512,1024,2048,4096
 #SBATCH --time=24:00:00
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
@@ -23,6 +23,6 @@ echo "Subalignment: ${SUBALN_IDX}"
 # source /path/to/venv/bin/activate
 
 # Run the single-step training script
-python 03_paramsearch.py ${SUBALN_IDX} ${N_CHAINS}
+python 04_params.py ${SUBALN_IDX} ${N_CHAINS}
 
 echo "SubAln ${SUBALN_IDX}, N_chains ${N_CHAINS} completed."
