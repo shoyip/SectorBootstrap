@@ -2,7 +2,7 @@
 #SBATCH --job-name=shuffling
 #SBATCH --output=logs/shuffling_%a.out
 #SBATCH --error=logs/shuffling_%a.err
-#SBATCH --array=0-229
+#SBATCH --array=0
 #SBATCH --time=24:00:00
 #SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
