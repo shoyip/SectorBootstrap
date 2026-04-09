@@ -45,6 +45,7 @@ for record in SeqIO.parse(aln_file, "fasta"):
 sequences = np.array(sequences)
 descriptions = np.array(descriptions)
 aln = letter_to_int(sequences)
+desc = descriptions.copy()
 M, N = aln.shape
 stop = time.perf_counter()
 
@@ -52,22 +53,28 @@ print(f"It took {stop-start:.3f} seconds.")
 print(f"FASTA file imported. There are {M} rows and {N} columns in the full alignment.")
 
 # deduplicate the alignment
-print("Deduplicating the alignment...")
-aln, _, aln_groups = unique_indices_groups(aln)
-desc = []
-for group in aln_groups:
-    desc.append(';'.join(descriptions[group]))
-desc = np.array(desc)
-M, N = aln.shape
-print(f"Alignment reduced to red sector and deduplicated. There are {M} rows and {N} columns in the reduced alignment.")
+# full aln should already be deduplicated
+#print("Deduplicating the alignment...")
+#aln, aln_indices, aln_groups = unique_indices_groups(aln)
+#desc = []
+#for group in aln_groups:
+#    desc.append(';'.join(descriptions[group]))
+#desc = np.array(desc)
+#M, N = aln.shape
+#print(f"Alignment reduced to red sector and deduplicated. There are {M} rows and {N} columns in the reduced alignment.")
 
 # compute weights
-start = time.perf_counter()
-w, M_eff = compute_weights(aln_redsector, dist_threshold=0.3)
-M_eff = int(M_eff)
-stop = time.perf_counter()
-print(f"It took {stop-start:.3f} seconds.")
-print(f"Computed weights. The effective number of sequences is {M_eff}.")
+#start = time.perf_counter()
+#w, M_eff = compute_weights(aln, dist_threshold=0.3)
+#M_eff = int(M_eff)
+#stop = time.perf_counter()
+#print(f"It took {stop-start:.3f} seconds.")
+#print(f"Computed weights. The effective number of sequences is {M_eff}.")
+
+# for the full alignment we cannot compute the weights, they are found in a file
+w = np.load("./data/full_weights.npy").ravel()
+M_eff = int(np.sum(w))
+print(f"Meff is {M_eff}")
 
 # set the seed
 np.random.seed(42)
@@ -83,8 +90,8 @@ if not os.path.exists(path):
 for idx in range(K):
     print(f"Preparing subalignment #{idx}...")
     subset_idx = np.random.choice(np.arange(M), size=M_eff, p=p)
-    aln_subset = aln_redsector[subset_idx]
-    desc_subset = desc_redsector[subset_idx]
+    aln_subset = aln[subset_idx]
+    desc_subset = desc[subset_idx]
     w_subset, M_eff_subset = compute_weights(aln_subset, dist_threshold=0.3)
     print(f"Subalignment has Meff={M_eff_subset}")
 
