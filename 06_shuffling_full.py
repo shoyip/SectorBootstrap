@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train SBMs with full alignment with shuffled columns. Columns are shuffled in decreasing order with the component on the red sector.")
     parser.add_argument("subaln_idx", type=int, help="Index of previously generated subalignment (0-9)")
     parser.add_argument("step", type=int, help="Step of shuffling (0-260)")
-    parser.add_argument("subaln_dir", type=str, default="./data/subalns", help="Directory where subalignments can be found.")
+    parser.add_argument("subaln_dir", type=str, default="./data/full_subalns", help="Directory where subalignments can be found.")
     args = parser.parse_args()
 
     step = args.step
@@ -45,12 +45,12 @@ if __name__ == "__main__":
     aln_shuffled = shuffle_columns(aln, cols_to_shuffle)
     run_SBM(
             aln_shuffled,
-            fam = f"SectorShuffling_SubAln{subaln_idx}_Step{step:02d}_Col{col}",
+            fam = f"FullShuffling_SubAln{subaln_idx}_Step{step:02d}",
             weights = weights,
-            N_chains = 256,
-            k_MCMC = 5000,
+            N_chains = 50,
+            k_MCMC = 100000,
             m = 1,
-            N_iter = 1000,
+            N_iter = 400,
             Nb_av = 10,
             lambdJ = 0,
             lambdh = 0
