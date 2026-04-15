@@ -20,7 +20,7 @@ if __name__ == "__main__":
     for i in range(10):
         print(f"===\nALIGNMENT N. {i}\n===")
         model_filename = next(Path(f'./models/FullShuffling_SubAln{i}_Step{step}/').glob("*.npy"), None)
-        mutations_number = 5
+        mutations_number = 10
         CompMut_DDE = uc.Propose_Mutation_DDE2(
                 model_filename,
                 mutations_number,
