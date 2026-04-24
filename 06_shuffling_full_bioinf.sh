@@ -2,7 +2,7 @@
 #SBATCH --job-name=shuffle_full
 #SBATCH --output=logs/shuffle_full_%a.out
 #SBATCH --error=logs/shuffle_full_%a.err
-#SBATCH --mem=4G
+#SBATCH --mem=8G
 #SBATCH --cpus-per-task=4
 #SBATCH --array=100-109,200-209,300-309,400-409,2350-2359,2450-2459,2550-2559,2600-2609
 

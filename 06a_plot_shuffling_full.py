@@ -35,17 +35,21 @@ if __name__ == "__main__":
         model_params = model_filestem.split("_")
         subaln_index = int(model_params[1].replace("SubAln", ""))
         step_index = int(model_params[2].replace("Step", ""))
+        replicate = int(model_params[-1].replace("R", ""))
 
         # for each folder there is just one model
         model_files.append({
             'subaln_index': subaln_index,
             'step_index': step_index,
+            'replicate': replicate,
             'model_file': str(model_filename)
         })
 
-    df_models = pd.DataFrame(model_files)\
-        .sort_values(["step_index", "subaln_index"])\
-        .set_index(["step_index", "subaln_index"])
+        df_models = pd.DataFrame(model_files)
+        idx = df_models.groupby(['step_index', 'subaln_index'])['replicate'].idxmax()
+        df_models = df_models.loc[idx, ['step_index', 'subaln_index', 'model_file']].reset_index(drop=True)\
+            .sort_values(["step_index", "subaln_index"])\
+            .set_index(["step_index", "subaln_index"])
 
     comp_ddes_list = []
     for model_file in df_models.loc[step_index]["model_file"].values:

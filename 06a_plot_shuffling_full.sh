@@ -4,7 +4,7 @@
 #SBATCH --error=logs/plot_shuffle_full_%a.err
 #SBATCH --mem=8G
 #SBATCH --cpus-per-task=4
-#SBATCH --array=0,50,100,150,200,210,220,230,240,250
+#SBATCH --array=10,20,30,40,235,245,255,260
 
 #Pp72
 #20,40,60,80,100,120,140,160,180,200,220,240
